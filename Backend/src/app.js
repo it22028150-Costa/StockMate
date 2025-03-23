@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 5000;
 
 // Import MongoDB connection function
 const connectDB = require('../config/db');
@@ -13,7 +13,7 @@ app.use(express.json());
 
 // Simple route for testing
 app.get('/', (req, res) => {
-    res.send('Hello, World!');
+    res.send('wellcome to stockMate API');
 });
 
 // Start the server
