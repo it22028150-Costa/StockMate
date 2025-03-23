@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+
 
 const MainLayout = () => {
+
   return (
     <main>
       <div className="bg-gray-100 space-y-0">
