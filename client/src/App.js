@@ -5,8 +5,9 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Inventory from "./components/Inventory";
 import Shopping from "./components/Shopping";
-import Recipe from "./components/Recipe";
+import Recipe from "./components/recipe/Recipe";
 import ChatBot from "./components/ChatBot";
+import RecipeDetail from "./components/recipe/RecipeDetail"
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/shopping" element={<Shopping />} />
           <Route path="/recipe" element={<Recipe />} />
+          <Route path="/recipe/:id" element={<RecipeDetail/>}/>
           <Route path="/chatbot" element={<ChatBot />} />
         </Routes>
       </div>
