@@ -15,15 +15,21 @@ router.get('/', authMiddleware, async (req, res) => {
 
 // Add new shopping item
 router.post('/', authMiddleware, async (req, res) => {
-  try {
-    const { itemName, amount } = req.body;
-    const newItem = new Shopping({ user: req.user.id, itemName, amount });
-    await newItem.save();
-    res.status(201).json(newItem);
-  } catch(err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    try {
+      console.log("Received data:", req.body);
+      const { itemName, amount } = req.body;
+      if (!itemName) {
+        return res.status(400).json({ message: "itemName is required" });
+      }
+      const newItem = new Shopping({ user: req.user.id, itemName, amount });
+      await newItem.save();
+      res.status(201).json(newItem);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+      
 
 // Update a shopping item
 router.put('/:id', authMiddleware, async (req, res) => {

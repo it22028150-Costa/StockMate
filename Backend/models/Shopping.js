@@ -8,4 +8,4 @@ const ShoppingSchema = new mongoose.Schema({
   amount: { type: Number, default: 0 }
 });
 
-module.exports = mongoose.model('Shopping', ShoppingSchema);
+module.exports = mongoose.model('Shoppings', ShoppingSchema);
