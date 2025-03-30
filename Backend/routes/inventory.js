@@ -15,11 +15,14 @@ router.get('/', authMiddleware, async (req, res) => {
 
 // Add new inventory item
 router.post('/', authMiddleware, async (req, res) => {
+  console.log(req.body);
   try {
-    const { itemName, quantity, expiryDate } = req.body;
-    const newItem = new Inventory({ user: req.user.id, itemName, quantity, expiryDate });
+    const { itemName, quantity, expiryDate,category} = req.body;
+    const newItem = new Inventory({ user: req.user.id, itemName, quantity, expiryDate, category});
+    
     await newItem.save();
     res.status(201).json(newItem);
+    
   } catch(err) {
     res.status(500).json({ error: err.message });
   }

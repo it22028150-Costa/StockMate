@@ -5,7 +5,12 @@ const InventorySchema = new mongoose.Schema({
   itemName: { type: String, required: true },
   quantity: { type: Number, default: 1 },
   expiryDate: { type: Date },
-  addedAt: { type: Date, default: Date.now }
+  addedAt: { type: Date, default: Date.now },
+  category: {
+    type: String,
+    required: true,
+    enum: ["Fruits", "Vegetables", "Dairy", "Bakery", "Other"], // Allowed categories
+  },
 });
 
 module.exports = mongoose.model('Inventory', InventorySchema);
