@@ -1,7 +1,7 @@
 const Home = () => {
     return (
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to StockMate</h1>
+        <h1 className="text-4xl font-serif mb-4">Welcome to StockMate</h1>
         <p className="mb-8">
           Smart Home Stock Management made easy. Manage your inventory, shopping, recipes and more.
         </p>
