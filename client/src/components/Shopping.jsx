@@ -8,6 +8,8 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 // Header component for navigation between views
 const Header = ({ showShoppingList, setShowShoppingList }) => (
   <div className="flex justify-center space-x-4 mb-8">
+      
+
     <button
       onClick={() => setShowShoppingList(false)}
       className={`px-6 py-2 rounded-lg font-semibold shadow-md transition-colors hover:bg-blue-600 ${
@@ -31,7 +33,8 @@ const Header = ({ showShoppingList, setShowShoppingList }) => (
 const BudgetSummary = ({ monthlyBudget, totalCost }) => {
   const budgetLeft = monthlyBudget - totalCost;
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="bg-white p-6 rounded-lg shadow-md"
+    >
       <h3 className="text-xl font-bold mb-2">Budget Summary</h3>
       <p className="font-semibold">Total Cost: ${totalCost.toFixed(2)}</p>
       <p className="font-semibold">
@@ -67,6 +70,7 @@ const BudgetChart = ({ monthlyBudget, totalCost }) => {
 
   return (
     <div className="max-w-sm mx-auto my-8">
+
       <Doughnut data={data} />
     </div>
   );
@@ -88,7 +92,8 @@ const InventoryList = ({
       item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
     );
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div className="bg-gray-300 p-6 rounded-lg shadow-md"
+    >
       <h3 className="text-xl font-bold mb-4">Inventory</h3>
       <div className="mb-6">
         <input
