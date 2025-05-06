@@ -12,10 +12,15 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-600 p-4 text-white">
+    <nav className="bg-black p-4 text-white">
       <div className="container mx-auto flex justify-between">
         <div>
-          <Link to="/" className="font-bold text-lg">StockMate</Link>
+        <Link
+  to="/"
+  className="font-extrabold text-2xl tracking-wider text-white hover:text-gray-300"
+>
+  StockMate
+</Link>
         </div>
         <div className="space-x-4">
           <Link to="/">Home</Link>
