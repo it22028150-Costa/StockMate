@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Bell, AlertCircle, Edit, Trash, PlusCircle, Search } from "lucide-react";
+import ReactPaginate from "react-paginate";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid
+} from "recharts";
 
 const Inventory = () => {
   const [items, setItems] = useState([]);
@@ -10,23 +20,39 @@ const Inventory = () => {
   const [editItem, setEditItem] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
+  const [pageNumber, setPageNumber] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const itemsPerPage = 5;
 
   useEffect(() => {
     fetchInventory();
   }, []);
 
   const fetchInventory = async () => {
+    setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/inventory", { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get("http://localhost:5000/api/inventory", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setItems(res.data);
     } catch (err) {
       console.error(err);
+      setAlert("Failed to fetch inventory. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleAddOrUpdate = async (e) => {
     e.preventDefault();
+    const itemNameRegex = /^[A-Za-z\s]+$/;
+    if (!itemNameRegex.test(newItem.itemName)) {
+      setAlert("Item name must contain only letters and spaces.");
+      return;
+    }
+
     if (!newItem.itemName || !newItem.quantity || !newItem.expiryDate || !newItem.category) {
       setAlert("All fields must be filled.");
       return;
@@ -46,10 +72,14 @@ const Inventory = () => {
     try {
       const token = localStorage.getItem("token");
       if (editItem) {
-        await axios.put(`http://localhost:5000/api/inventory/${editItem._id}`, newItem, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.put(`http://localhost:5000/api/inventory/${editItem._id}`, newItem, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         setAlert("Item updated successfully!");
       } else {
-        await axios.post("http://localhost:5000/api/inventory", newItem, { headers: { Authorization: `Bearer ${token}` } });
+        await axios.post("http://localhost:5000/api/inventory", newItem, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         setAlert("Item added successfully!");
       }
       fetchInventory();
@@ -64,13 +94,25 @@ const Inventory = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/inventory/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`http://localhost:5000/api/inventory/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setAlert("Item deleted successfully!");
       fetchInventory();
     } catch (err) {
       setAlert("Failed to delete item. Please try again.");
       console.error(err);
     }
+  };
+
+  const handleEdit = (item) => {
+    setEditItem(item);
+    setNewItem({
+      itemName: item.itemName,
+      quantity: item.quantity,
+      expiryDate: new Date(item.expiryDate).toISOString().split("T")[0],
+      category: item.category
+    });
   };
 
   const checkNotifications = (item) => {
@@ -92,164 +134,259 @@ const Inventory = () => {
     return notifications;
   };
 
-  const handleEdit = (item) => {
-    setEditItem(item);
-    setNewItem({
-      itemName: item.itemName,
-      quantity: item.quantity,
-      expiryDate: new Date(item.expiryDate).toISOString().split('T')[0],  // Format as YYYY-MM-DD
-      category: item.category,
+  const getCategoryData = () => {
+    const categoryMap = {};
+
+    items.forEach((item) => {
+      if (categoryMap[item.category]) {
+        categoryMap[item.category] += item.quantity;
+      } else {
+        categoryMap[item.category] = item.quantity;
+      }
     });
+
+    return Object.entries(categoryMap).map(([category, quantity]) => ({
+      category,
+      quantity
+    }));
   };
 
-  const filteredItems = items.filter(item =>
+  const filteredItems = items.filter((item) =>
     item.itemName.toLowerCase().includes(searchQuery.toLowerCase()) &&
     (filterCategory ? item.category === filterCategory : true)
   );
 
+  const displayedItems = filteredItems.slice(
+    pageNumber * itemsPerPage,
+    (pageNumber + 1) * itemsPerPage
+  );
+
+  const handlePageChange = (selectedPage) => {
+    setPageNumber(selectedPage.selected);
+  };
+
+  const handlePrint = () => {
+    const printContent = document.getElementById("inventory-table").cloneNode(true);
+    const printRows = printContent.querySelectorAll("tr");
+
+    printRows.forEach((row) => {
+      row.deleteCell(-1);
+    });
+
+    const newWindow = window.open("", "_blank");
+    newWindow.document.write("<html><head><title>Print Inventory</title><style>");
+    newWindow.document.write(`
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+    `);
+    newWindow.document.write("</style></head><body>");
+    newWindow.document.write(printContent.innerHTML);
+    newWindow.document.write("</body></html>");
+    newWindow.document.close();
+    newWindow.print();
+  };
+
   return (
-    <div 
-  className="min-h-screen bg-cover bg-center p-6 font-sans" 
-  style={{ backgroundImage: "url('/i.jpg')" }}
->
-  <div className="max-w-5xl mx-auto bg-white bg-opacity-80 backdrop-blur-md shadow-xl rounded-lg p-8">
-    <h2 className="text-4xl font-bold text-gray-800 text-center mb-8">Inventory Control Center</h2>
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md p-10 space-y-10">
+        <h2 className="text-3xl font-semibold text-gray-800 text-center">📦 Inventory Control Center</h2>
 
-        
-        {alert && <div className="bg-red-100 text-red-700 p-4 mb-6 rounded-lg text-center">{alert}</div>}
+        {alert && (
+          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md">{alert}</div>
+        )}
 
-        {/* Add or Update Item Form */}
-        <form onSubmit={handleAddOrUpdate} className="flex flex-wrap gap-8 justify-center mb-8">
-          <div className="flex flex-col items-center">
-            <label className="text-lg font-medium mb-2 text-gray-700" htmlFor="itemName">Item Name</label>
+        {/* Form */}
+        <form onSubmit={handleAddOrUpdate} className="grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
+          {/* Inputs */}
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Item Name</label>
             <input
-              id="itemName"
               type="text"
-              placeholder="Item Name"
               value={newItem.itemName}
               onChange={(e) => setNewItem({ ...newItem, itemName: e.target.value })}
-              className="p-4 border rounded-md w-80 shadow-sm focus:ring-2 focus:ring-blue-500 text-lg"
+              className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="flex flex-col items-center">
-            <label className="text-lg font-medium mb-2 text-gray-700" htmlFor="quantity">Quantity</label>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Quantity</label>
             <input
-              id="quantity"
               type="number"
-              placeholder="Quantity"
               value={newItem.quantity}
               onChange={(e) => setNewItem({ ...newItem, quantity: e.target.value })}
-              className="p-4 border rounded-md w-32 shadow-sm focus:ring-2 focus:ring-blue-500 text-lg"
+              className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="flex flex-col items-center">
-            <label className="text-lg font-medium mb-2 text-gray-700" htmlFor="expiryDate">Expiry Date</label>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Expiry Date</label>
             <input
-              id="expiryDate"
               type="date"
               value={newItem.expiryDate}
               onChange={(e) => setNewItem({ ...newItem, expiryDate: e.target.value })}
-              className="p-4 border rounded-md w-40 shadow-sm focus:ring-2 focus:ring-blue-500 text-lg"
+              className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          <div className="flex flex-col items-center">
-            <label className="text-lg font-medium mb-2 text-gray-700" htmlFor="category">Category</label>
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Category</label>
             <select
-              id="category"
               value={newItem.category}
               onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
-              className="p-4 border rounded-md w-48 shadow-sm focus:ring-2 focus:ring-blue-500 text-lg"
+              className="w-full border border-gray-300 p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Category</option>
-              {categories.map((category, index) => (
-                <option key={index} value={category}>{category}</option>
+              {categories.map((category, i) => (
+                <option key={i} value={category}>
+                  {category}
+                </option>
               ))}
             </select>
           </div>
 
-          <div className="flex items-center justify-center mt-6">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white p-4 rounded-md flex items-center hover:bg-blue-500 transition duration-300 ease-in-out shadow-lg"
-            >
-              <PlusCircle className="w-6 h-6 mr-3" />
+          <div>
+            <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-500 transition">
               {editItem ? "Update Item" : "Add Item"}
             </button>
           </div>
         </form>
 
         {/* Search and Filter */}
-        <div className="flex justify-between mb-6">
-          <div className="flex items-center bg-gray-100 p-3 rounded-lg shadow-md w-1/2">
-            <Search className="text-gray-500 w-6 h-6" />
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="relative w-full md:w-1/2">
+            <Search className="absolute top-3 left-3 text-gray-400" />
             <input
               type="text"
               placeholder="Search items..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="ml-4 bg-transparent focus:outline-none text-lg w-full"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
           </div>
 
-          <div className="flex items-center w-1/4">
-            <label className="text-lg font-medium mr-4 text-gray-700">Filter by Category:</label>
+          <div className="w-full md:w-1/3">
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="p-3 border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full text-lg"
+              className="w-full py-3 px-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
               <option value="">All Categories</option>
-              {categories.map((category, index) => (
-                <option key={index} value={category}>{category}</option>
+              {categories.map((category, i) => (
+                <option key={i} value={category}>{category}</option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Inventory Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse rounded-lg shadow-md overflow-hidden">
-            <thead>
-              <tr className="bg-black -600 text-white">
-                <th className="p-6 text-left text-lg font-medium">Item</th>
-                <th className="p-6 text-left text-lg font-medium">Quantity</th>
-                <th className="p-6 text-left text-lg font-medium">Expiry</th>
-                <th className="p-6 text-left text-lg font-medium">Category</th>
-                <th className="p-6 text-left text-lg font-medium">Alerts</th>
-                <th className="p-6 text-left text-lg font-medium">Actions</th>
+        {/* Print */}
+        <div className="text-right">
+          <button
+            onClick={handlePrint}
+            className="bg-green-600 text-white px-5 py-3 rounded-md hover:bg-green-500 transition font-medium"
+          >
+            Print Table
+          </button>
+        </div>
+
+        {/* Table */}
+        <div className="overflow-auto" id="inventory-table">
+          <table className="w-full table-auto border border-gray-200 rounded-md">
+            <thead className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
+              <tr>
+                <th className="p-4">Item</th>
+                <th className="p-4">Quantity</th>
+                <th className="p-4">Expiry</th>
+                <th className="p-4">Category</th>
+                <th className="p-4">Alerts</th>
+                <th className="p-4 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredItems.map((item, index) => (
-                <tr key={item._id} className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200 transition`}>
-                  <td className="p-6 border text-lg font-medium">{item.itemName}</td>
-                  <td className={`p-6 border text-lg ${item.quantity <= 10 ? "text-red-600 font-bold" : ""}`}>{item.quantity}</td>
-                  <td className={`p-6 border text-lg ${new Date(item.expiryDate) < new Date() ? "text-red-600 font-bold" : ""}`}>
+              {displayedItems.map((item) => (
+                <tr key={item._id} className="border-t hover:bg-gray-50 transition">
+                  <td className="p-4">{item.itemName}</td>
+                  <td className={`p-4 ${item.quantity <= 10 ? "text-red-600 font-semibold" : ""}`}>{item.quantity}</td>
+                  <td className={`p-4 ${new Date(item.expiryDate) < new Date() ? "text-red-600 font-semibold" : ""}`}>
                     {new Date(item.expiryDate).toLocaleDateString()}
                   </td>
-                  <td className="p-6 border text-lg">{item.category}</td>
-                  <td className="p-6 border text-lg">
+                  <td className="p-4">{item.category}</td>
+                  <td className="p-4 space-y-1">
                     {checkNotifications(item).map((n, i) => (
-                      <div key={i} className={`text-sm p-2 ${n.type === "low-stock" ? "text-red-500" : "text-yellow-500"}`}>
+                      <div key={i} className={`text-sm ${n.type === "low-stock" ? "text-red-500" : "text-yellow-500"}`}>
                         {n.message}
                       </div>
                     ))}
                   </td>
-                  <td className="p-6 border flex gap-4">
-                    <button onClick={() => handleEdit(item)} className="bg-blue-500 text-white p-3 rounded-md hover:bg-green-400 transition duration-300">
-                      <Edit className="w-6 h-6" />
+                  <td className="p-4 flex justify-center gap-3">
+                    <button
+                      onClick={() => handleEdit(item)}
+                      className="p-2 bg-blue-500 hover:bg-blue-400 text-white rounded-md"
+                    >
+                      <Edit className="w-5 h-5" />
                     </button>
-                    <button onClick={() => handleDelete(item._id)} className="bg-red-500 text-white p-3 rounded-md hover:bg-red-400 transition duration-300">
-                      <Trash className="w-6 h-6" />
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="p-2 bg-red-500 hover:bg-red-400 text-white rounded-md"
+                    >
+                      <Trash className="w-5 h-5" />
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex justify-center pt-6">
+          <ReactPaginate
+            pageCount={Math.ceil(filteredItems.length / itemsPerPage)}
+            onPageChange={handlePageChange}
+            containerClassName="flex space-x-2"
+            pageClassName="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+            activeClassName="bg-blue-500 text-white"
+            previousLabel="<"
+            nextLabel=">"
+            previousClassName="px-3 py-2 bg-gray-200 rounded-md"
+            nextClassName="px-3 py-2 bg-gray-200 rounded-md"
+            breakLabel="..."
+          />
+        </div>
+
+        {/* Chart */}
+        <div>
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">Inventory Overview by Category</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={getCategoryData()}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="category" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="quantity" fill="#3182ce" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>
