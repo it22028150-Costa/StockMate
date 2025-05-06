@@ -7,7 +7,7 @@ import "swiper/css/navigation";
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-200 via-white to-purple-300 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-white flex items-center justify-center p-6 relative overflow-hidden">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -46,17 +46,30 @@ const Home = () => {
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 1 }}
-          className="md:w-1/2 p-10 flex flex-col justify-center text-center"
+          className="md:w-1/2 p-10 flex flex-col justify-center text-center space-y-8"
         >
-          <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-600 mb-4">
-            Welcome to StockMate
-          </h1>
-          <p className="text-gray-700 text-lg mb-6">
+          {/* Heading */}
+          <div className="space-y-2">
+            <h1 className="text-4xl sm:text-5xl font-bold text-gray-800">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Welcome to{" "}
+              </span>
+              <span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent font-extrabold">
+                StockMate
+              </span>
+            </h1>
+            <p className="text-sm text-gray-500 tracking-wide">
+              Your all-in-one household inventory companion
+            </p>
+          </div>
+
+          {/* Description */}
+          <p className="text-gray-700 text-lg">
             Your smart assistant for managing household supplies. Stay ahead with real-time tracking, instant alerts, and budget-friendly shopping.
           </p>
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-6">
+          <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
             <motion.a
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -76,29 +89,27 @@ const Home = () => {
           </div>
 
           {/* Feature Highlights */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-sm text-gray-700 mb-6">
-            <div className="flex items-center space-x-3">
-              <img src="/icons/Real-time Inventory Tracking.png" alt="Inventory Icon" className="w-6 h-6" />
-              <span>Real-time Inventory Tracking</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <img src="/icons/Low Stock Notifications.png" alt="Alert Icon" className="w-6 h-6" />
-              <span>Low Stock Notifications</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <img src="/icons/Smart Budget Planning.png" alt="Budget Icon" className="w-6 h-6" />
-              <span>Smart Budget Planning</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <img src="/icons/Recipe-based Stock Suggestions.png" alt="Recipe Icon" className="w-6 h-6" />
-              <span>Recipe-based Stock Suggestions</span>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left text-sm text-gray-700">
+            {[
+              { icon: "Real-time Inventory Tracking.png", label: "Real-time Inventory Tracking" },
+              { icon: "Low Stock Notifications.png", label: "Low Stock Notifications" },
+              { icon: "Smart Budget Planning.png", label: "Smart Budget Planning" },
+              { icon: "Recipe-based Stock Suggestions.png", label: "Recipe-based Stock Suggestions" },
+            ].map((feature, index) => (
+              <div
+                key={index}
+                className="flex items-center space-x-3 p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition"
+              >
+                <img src={`/icons/${feature.icon}`} alt={feature.label} className="w-6 h-6" />
+                <span>{feature.label}</span>
+              </div>
+            ))}
           </div>
 
           {/* Testimonial */}
-          <blockquote className="italic text-gray-500 text-sm border-l-4 border-blue-400 pl-4">
+          <div className="border-t pt-4 text-gray-500 italic text-sm">
             “StockMate made my pantry feel like a supermarket — neat, updated, and under control.”
-          </blockquote>
+          </div>
         </motion.div>
       </motion.div>
     </div>
