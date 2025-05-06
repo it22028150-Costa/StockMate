@@ -1,38 +1,63 @@
+import { motion } from "framer-motion";
+
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-100 to-purple-200 flex items-center justify-center p-6">
-      <div className="max-w-4xl w-full bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col md:flex-row">
-        
+    <div className="min-h-screen bg-gradient-to-br from-blue-200 via-white to-purple-300 flex items-center justify-center p-6">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+        className="max-w-5xl w-full bg-white/70 backdrop-blur-lg shadow-2xl rounded-3xl overflow-hidden flex flex-col md:flex-row"
+      >
         {/* Left side - Image */}
-        <div className="md:w-1/2">
+        <motion.div
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="md:w-1/2"
+        >
           <img
             src="/wall.jpg"
             alt="Stock Management"
             className="object-cover h-full w-full"
           />
-        </div>
+        </motion.div>
 
         {/* Right side - Content */}
-        <div className="md:w-1/2 p-8 flex flex-col justify-center text-center">
-          <h1 className="text-4xl font-extrabold text-gray-800 mb-4">Welcome to <span className="text-blue-600">StockMate</span></h1>
-          <p className="text-gray-600 mb-6">
-            Smart home stock management made easy. Organize your inventory, track expiry, plan shopping, and more — all in one place.
+        <motion.div
+          initial={{ x: 50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="md:w-1/2 p-10 flex flex-col justify-center text-center"
+        >
+          <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-600 mb-4">
+            Welcome to StockMate
+          </h1>
+          <p className="text-gray-700 text-lg mb-8">
+            Smart home stock management made effortless. Track stock, expiry, and shopping — beautifully.
           </p>
-          <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:justify-center sm:space-x-4">
-            <a href="/inventory" className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-medium transition">
+          <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:justify-center sm:space-x-6">
+            <motion.a
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              href="/inventory"
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg transition duration-300"
+            >
               Manage Inventory
-            </a>
-            <a href="/shopping" className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg font-medium transition">
+            </motion.a>
+            <motion.a
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              href="/shopping"
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-xl shadow-lg transition duration-300"
+            >
               Shopping & Budget
-            </a>
+            </motion.a>
           </div>
-        </div>
-
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
 
 export default Home;
-
-  
