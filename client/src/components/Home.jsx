@@ -1,4 +1,9 @@
 import { motion } from "framer-motion";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 const Home = () => {
   return (
@@ -9,18 +14,31 @@ const Home = () => {
         transition={{ duration: 0.8 }}
         className="max-w-5xl w-full bg-white/70 backdrop-blur-lg shadow-2xl rounded-3xl overflow-hidden flex flex-col md:flex-row"
       >
-        {/* Left side - Image */}
+        {/* Left side - Slider */}
         <motion.div
           initial={{ x: -50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 1 }}
           className="md:w-1/2"
         >
-          <img
-            src="/wall.jpg"
-            alt="Stock Management"
-            className="object-cover h-full w-full"
-          />
+          <Swiper
+            modules={[Autoplay, Pagination, Navigation]}
+            autoplay={{ delay: 3000 }}
+            pagination={{ clickable: true }}
+            navigation={true}
+            loop={true}
+            className="h-full w-full"
+          >
+            <SwiperSlide>
+              <img src="/wall.jpg" alt="Slide 1" className="object-cover w-full h-full" />
+            </SwiperSlide>
+            <SwiperSlide>
+              <img src="/stock2.jpg" alt="Slide 2" className="object-cover w-full h-full" />
+            </SwiperSlide>
+            <SwiperSlide>
+              <img src="/stock3.jpg" alt="Slide 3" className="object-cover w-full h-full" />
+            </SwiperSlide>
+          </Swiper>
         </motion.div>
 
         {/* Right side - Content */}
