@@ -6,31 +6,37 @@ const Navbar = () => {
   const handleLogout = () => {
     // Remove the token (or any auth state) from local storage
     localStorage.removeItem("token");
-    // Optionally, you can also clear any user state if you're storing it in a context or state management solution
     // Redirect the user to the login page
     navigate("/login");
   };
 
   return (
-    <nav className="bg-blue-600 p-4 text-white">
-      <div className="container mx-auto flex justify-between">
-        <div>
-          <Link to="/" className="font-bold text-lg">StockMate</Link>
-        </div>
-        <div className="space-x-4">
-          <Link to="/">Home</Link>
-          <Link to="/inventory">Inventory</Link>
-          <Link to="/shopping">Shopping</Link>
-          <Link to="/recipe">Recipes</Link>
-          <Link to="/chatbot">ChatBot</Link>
-          <Link to="/login">Login</Link>
-          <Link to="/signup">Sign Up</Link>
-          <button 
-            onClick={handleLogout} 
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
-          >
-            Logout
-          </button>
+    <nav className="bg-gray-800 p-4 text-white shadow-md">
+      <div className="container mx-auto flex justify-between items-center">
+        {/* Logo/Brand */}
+        <Link to="/" className="font-semibold text-2xl text-gray-200">
+          StockMate
+        </Link>
+
+        {/* Navigation Links */}
+        <div className="space-x-6 text-lg flex items-center">
+          <Link to="/" className="hover:text-gray-400 transition duration-300">Home</Link>
+          <Link to="/inventory" className="hover:text-gray-400 transition duration-300">Inventory</Link>
+          <Link to="/shopping" className="hover:text-gray-400 transition duration-300">Shopping</Link>
+          <Link to="/recipe" className="hover:text-gray-400 transition duration-300">Recipes</Link>
+          <Link to="/chatbot" className="hover:text-gray-400 transition duration-300">ChatBot</Link>
+
+          {/* Auth Links & Logout */}
+          <div className="space-x-6">
+            <Link to="/login" className="hover:text-gray-400 transition duration-300">Login</Link>
+            <Link to="/signup" className="hover:text-gray-400 transition duration-300">Sign Up</Link>
+            <button
+              onClick={handleLogout}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-lg transition duration-300 transform hover:scale-105"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
     </nav>
