@@ -33,10 +33,10 @@ const Home = () => {
               <img src="/wall.jpg" alt="Slide 1" className="object-cover w-full h-full" />
             </SwiperSlide>
             <SwiperSlide>
-              <img src="/stock2.jpg" alt="Slide 2" className="object-cover w-full h-full" />
+              <img src="/wall2.webp" alt="Slide 2" className="object-cover w-full h-full" />
             </SwiperSlide>
             <SwiperSlide>
-              <img src="/stock3.jpg" alt="Slide 3" className="object-cover w-full h-full" />
+              <img src="/wall3.jpg" alt="Slide 3" className="object-cover w-full h-full" />
             </SwiperSlide>
           </Swiper>
         </motion.div>
