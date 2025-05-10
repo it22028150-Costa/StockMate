@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "express": "^5.1.0",
     "framer-motion": "^12.6.2",
-    "lucide-react": "^0.485.0"
+    "lucide-react": "^0.485.0",
+    "mongoose": "^8.14.1",
+    "react-to-print": "^3.1.0"
   }
 }
