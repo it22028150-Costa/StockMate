@@ -6,8 +6,9 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Inventory from "./components/Inventory";
 import Shopping from "./components/Shopping";
-import Recipe from "./components/Recipe";
-import ChatBot from "./components/ChatBot";
+import Recipe from "./components/recipe/Recipe";
+import RecipeDetail from "./components/recipe/RecipeDetail"
+import GenerateRecipes from "./components/recipe/GenerateRecipes";
 import ProfilePage from "./components/user-profile";
 
 // Wrapper to access hooks like useLocation
@@ -30,7 +31,8 @@ const AppWrapper = () => {
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/shopping" element={<Shopping />} />
           <Route path="/recipe" element={<Recipe />} />
-          <Route path="/chatbot" element={<ChatBot />} />
+          <Route path="/recipe/:id" element={<RecipeDetail/>}/>
+          <Route path="/recipe/generate" element={<GenerateRecipes/>}/>
           <Route path="/my-profile" element={<ProfilePage />} />
         </Routes>
       </div>
