@@ -29,6 +29,7 @@ const Navbar = () => {
               <Link to="/inventory">Inventory</Link>
               <Link to="/shopping">Shopping</Link>
               <Link to="/recipe">Recipes</Link>
+              <Link to="/my-profile">My Profile</Link>
             </>
           )}
           {!isAuthenticated ? (

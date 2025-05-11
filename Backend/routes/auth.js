@@ -26,13 +26,34 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: 'User does not exist' });
-    
+
     const isMatch = await user.comparePassword(password);
     if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
-    
+
+    const now = new Date();
+
+    // Set firstLogin only if it's null
+    if (!user.firstLogin) {
+      user.firstLogin = now;
+    }
+
+    // Always update lastLogin
+    user.lastLogin = now;
+    await user.save(); // Save changes to login dates
+
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-    res.status(200).json({ token, user: { id: user._id, name: user.name, email: user.email } });
-  } catch(err) {
+
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        firstLogin: user.firstLogin,
+        lastLogin: user.lastLogin
+      }
+    });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
