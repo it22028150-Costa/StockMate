@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Home = () => {
   return (
     <div
@@ -18,21 +20,21 @@ const Home = () => {
           Welcome to StockMate
         </h1>
         <p className="text-lg md:text-2xl mb-8">
-          Smart Home Stock Management made easy. Manage your inventory, shopping, recipes and more.
+          Smart Home Stock Management made easy. Manage your inventory, shopping, recipes, and more.
         </p>
         <div className="space-x-4">
-          <a
-            href="/inventory"
+          <Link
+            to="/login"
             className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded transition-colors"
           >
-            Manage Inventory
-          </a>
-          <a
-            href="/shopping"
+            Login
+          </Link>
+          <Link
+            to="/signup"
             className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded transition-colors"
           >
-            Shopping & Budget
-          </a>
+            Sign Up
+          </Link>
         </div>
       </div>
 
