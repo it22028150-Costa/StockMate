@@ -9,7 +9,7 @@ const InventorySchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ["Fruits", "Vegetables", "Dairy", "Bakery", "Other"], // Allowed categories
+    enum: ["Fruits", "Vegetables", "Dairy", "Bakery", "Other","Meat","Poultry"], // Allowed categories
   },
 });
 

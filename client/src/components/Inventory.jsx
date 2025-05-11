@@ -14,7 +14,7 @@ import {
 
 const Inventory = () => {
   const [items, setItems] = useState([]);
-  const [categories, setCategories] = useState(["Fruits", "Vegetables", "Dairy", "Bakery"]);
+  const [categories, setCategories] = useState(["Fruits", "Vegetables", "Dairy", "Bakery","Meat","Poultry"]);
   const [newItem, setNewItem] = useState({ itemName: "", quantity: 1, expiryDate: "", category: "" });
   const [alert, setAlert] = useState(null);
   const [editItem, setEditItem] = useState(null);
@@ -301,14 +301,7 @@ const Inventory = () => {
         </div>
 
         {/* Print */}
-        <div className="text-right">
-          <button
-            onClick={handlePrint}
-            className="bg-green-600 text-white px-5 py-3 rounded-md hover:bg-green-500 transition font-medium"
-          >
-            Print Table
-          </button>
-        </div>
+   
 
         {/* Table */}
         <div className="overflow-auto" id="inventory-table">
@@ -373,6 +366,15 @@ const Inventory = () => {
             nextClassName="px-3 py-2 bg-gray-200 rounded-md"
             breakLabel="..."
           />
+        </div>
+
+             <div className="text-right">
+          <button
+            onClick={handlePrint}
+            className="bg-green-600 text-white px-5 py-3 rounded-md hover:bg-green-500 transition font-medium"
+          >
+            Print
+          </button>
         </div>
 
         {/* Chart */}
