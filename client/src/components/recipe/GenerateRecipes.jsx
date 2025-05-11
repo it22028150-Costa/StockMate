@@ -50,50 +50,55 @@ const GenerateRecipes = () => {
         .filter((item) => selectedItems.includes(item._id))
         .map((item) => item.itemName.toLowerCase());
 
-      // Array to store all meals from TheMealDB
-      let allMeals = [];
+      // Spoonacular API key (replace with your own API key)
+      const apiKey = "dfcfb49e8323452783b82e2411dcf64b";
 
-      // Fetch meals for each ingredient
-      for (const ingredient of selectedItemNames) {
-        const mealResponse = await axios.get(
-          `https://www.themealdb.com/api/json/v1/1/filter.php?i=${ingredient}`
-        );
-        const meals = mealResponse.data.meals || [];
-        allMeals = [...allMeals, ...meals];
-      }
-
-      // Remove duplicates based on meal ID
-      const uniqueMeals = Array.from(
-        new Map(allMeals.map((meal) => [meal.idMeal, meal])).values()
-      );
-
-      // Fetch detailed recipe information for each meal
-      const detailedRecipes = [];
-      for (const meal of uniqueMeals) {
-        const detailResponse = await axios.get(
-          `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${meal.idMeal}`
-        );
-        const detailedMeal = detailResponse.data.meals[0];
-
-        // Extract ingredients (TheMealDB returns up to 20 ingredients as strIngredient1, strIngredient2, etc.)
-        const ingredients = [];
-        for (let i = 1; i <= 20; i++) {
-          const ingredient = detailedMeal[`strIngredient${i}`];
-          const measure = detailedMeal[`strMeasure${i}`];
-          if (ingredient && ingredient.trim()) {
-            ingredients.push(`${measure ? measure.trim() + " " : ""}${ingredient.trim()}`);
+      // Search for recipes using multiple ingredients in a single query
+      const searchResponse = await axios.get(
+        "https://api.spoonacular.com/recipes/complexSearch",
+        {
+          params: {
+            apiKey,
+            includeIngredients: selectedItemNames.join(","),
+            number: 10, // Limit to 10 recipes
+            addRecipeInformation: false // We'll fetch detailed info separately
           }
         }
+      );
 
-        // Split instructions into an array of steps
-        const instructions = detailedMeal.strInstructions
-          ? detailedMeal.strInstructions.split("\r\n").filter((step) => step.trim())
-          : [];
+      const meals = searchResponse.data.results || [];
+
+      // Fetch detailed information for each recipe
+      const detailedRecipes = [];
+      for (const meal of meals) {
+        const detailResponse = await axios.get(
+          `https://api.spoonacular.com/recipes/${meal.id}/information`,
+          {
+            params: {
+              apiKey,
+              includeNutrition: false // We don't need nutrition data for now
+            }
+          }
+        );
+
+        const detailedMeal = detailResponse.data;
+
+        // Extract ingredients
+        const ingredients = detailedMeal.extendedIngredients.map((ing) => {
+          const amount = ing.measures.metric.amount || ing.measures.us.amount;
+          const unit = ing.measures.metric.unitShort || ing.measures.us.unitShort;
+          return `${amount} ${unit} ${ing.name}`.trim();
+        });
+
+        // Extract instructions
+        const instructions = detailedMeal.analyzedInstructions?.[0]?.steps?.map(
+          (step) => step.step
+        ) || [];
 
         detailedRecipes.push({
-          name: detailedMeal.strMeal,
+          name: detailedMeal.title,
           ingredients,
-          instructions,
+          instructions
         });
       }
 
