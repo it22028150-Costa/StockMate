@@ -8,6 +8,7 @@ const inventoryRoutes = require('./routes/inventory');
 const shoppingRoutes = require('./routes/shopping');
 const recipeRoutes = require('./routes/recipe');
 const chatbotRoutes = require('./routes/chatbot');
+const userRoutes = require('./routes/user');
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/shopping', shoppingRoutes);
 app.use('/api/recipe', recipeRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/user', userRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
