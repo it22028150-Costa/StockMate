@@ -76,7 +76,7 @@ const BudgetChart = ({ monthlyBudget, totalCost }) => {
   );
 };
 
-// InventoryList component with search and input fields
+// InventoryList component with search, input fields, and expiry alert
 const InventoryList = ({
   inventoryItems,
   amountInputs,
@@ -86,14 +86,23 @@ const InventoryList = ({
   handleAddToShopping,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Function to check if an item is expiring soon (within 7 days)
+  const isExpiringSoon = (expiryDate) => {
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffInDays = (expiry - today) / (1000 * 60 * 60 * 24);
+    return diffInDays <= 7 && diffInDays >= 0; // Expiring within 7 days and not expired
+  };
+
   const filteredItems = inventoryItems
     .filter((item) => item.quantity < 10)
     .filter((item) =>
       item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
   return (
-    <div className="bg-gray-300 p-6 rounded-lg shadow-md"
-    >
+    <div className="bg-gray-300 p-6 rounded-lg shadow-md">
       <h3 className="text-xl font-bold mb-4">Inventory</h3>
       <div className="mb-6">
         <input
@@ -111,7 +120,9 @@ const InventoryList = ({
           {filteredItems.map((item) => (
             <li
               key={item._id}
-              className="mb-4 border-b pb-4 flex flex-col transition-all hover:bg-gray-50"
+              className={`mb-4 border-b pb-4 flex flex-col transition-all hover:bg-gray-50 ${
+                isExpiringSoon(item.expiryDate) ? "bg-red-100" : ""
+              }`}
             >
               <div className="flex justify-between items-center mb-2">
                 <span className="font-medium">{item.itemName}</span>
@@ -121,6 +132,11 @@ const InventoryList = ({
               </div>
               <div className="text-sm text-gray-500 mb-2">
                 Expires on: {new Date(item.expiryDate).toLocaleDateString()}
+                {isExpiringSoon(item.expiryDate) && (
+                  <span className="ml-2 text-red-600 font-semibold">
+                    (Expiring Soon!)
+                  </span>
+                )}
               </div>
               <div className="flex items-center space-x-3">
                 <input
@@ -153,7 +169,6 @@ const InventoryList = ({
     </div>
   );
 };
-
 // ShoppingList component to display shopping items in a table
 const ShoppingList = ({
   shoppingItems,
