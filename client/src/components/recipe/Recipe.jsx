@@ -140,10 +140,9 @@ const Recipe = () => {
     navigate("/recipe/generate");
   };
 
-  // Split instructions into numbered steps
+
   const parseInstructions = (instructions) => {
     if (!instructions) return [];
-    // Split by numbering pattern (e.g., "1. Cook. 2. Clean" or "1. Cook 2. Clean")
     const steps = instructions.split(/(?=\d+\.\s)/).map(step => step.trim()).filter(step => step);
     return steps;
   };
