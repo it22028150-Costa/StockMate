@@ -6,7 +6,7 @@ import { FaSearch, FaTrash, FaCheck, FaUndo, FaPrint } from "react-icons/fa";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// Header component for navigation between views
+// Header component (unchanged)
 const Header = ({ currentView, setCurrentView }) => (
   <nav className="sticky top-0 z-10 bg-white shadow-md py-4 mb-8">
     <div className="container mx-auto px-4 flex justify-center space-x-4">
@@ -205,7 +205,7 @@ const InventoryList = ({
   );
 };
 
-// ShoppingList component (modified to only show pending items)
+// ShoppingList component (unchanged)
 const ShoppingList = ({
   shoppingItems,
   calculateItemTotal,
@@ -272,7 +272,7 @@ const ShoppingList = ({
   );
 };
 
-// New PurchasedItemsList component
+// PurchasedItemsList component (unchanged)
 const PurchasedItemsList = ({ shoppingItems, calculateItemTotal, handleToggleStatus }) => {
   const purchasedItems = shoppingItems.filter((item) => item.status === "purchased");
 
@@ -327,14 +327,23 @@ const PurchasedItemsList = ({ shoppingItems, calculateItemTotal, handleToggleSta
   );
 };
 
-// Main Shopping component
+// Main Shopping component (modified)
 const Shopping = () => {
   const [inventoryItems, setInventoryItems] = useState([]);
   const [shoppingItems, setShoppingItems] = useState([]);
-  const [currentView, setCurrentView] = useState("inventory"); // New state for view
+  const [currentView, setCurrentView] = useState("inventory");
   const [priceInputs, setPriceInputs] = useState({});
   const [amountInputs, setAmountInputs] = useState({});
-  const [monthlyBudget, setMonthlyBudget] = useState(0);
+  // Initialize monthlyBudget from localStorage or default to 100
+  const [monthlyBudget, setMonthlyBudget] = useState(() => {
+    const savedBudget = localStorage.getItem("monthlyBudget");
+    return savedBudget ? parseFloat(savedBudget) : 100; // Default to 100 if no saved value
+  });
+
+  // Save monthlyBudget to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("monthlyBudget", monthlyBudget);
+  }, [monthlyBudget]);
 
   // Fetch Inventory Items
   const fetchInventory = async () => {
@@ -409,7 +418,7 @@ const Shopping = () => {
   };
 
   const handleToggleStatus = async (item) => {
-    const newStatus = item.status === "pending" ? "purchased" : "pending";
+    const newStatus = item.status === "pending" ? "purchased、上" : "pending";
     try {
       const token = localStorage.getItem("token");
       await axios.put(
@@ -487,6 +496,7 @@ const Shopping = () => {
                   <input
                     type="number"
                     step="0.01"
+                    min="0"
                     value={monthlyBudget}
                     onChange={(e) => {
                       const value = parseFloat(e.target.value);
