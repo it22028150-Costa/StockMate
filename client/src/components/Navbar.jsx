@@ -24,9 +24,13 @@ const Navbar = () => {
         </div>
         <div className="space-x-4">
           <Link to="/">Home</Link>
-          <Link to="/inventory">Inventory</Link>
-          <Link to="/shopping">Shopping</Link>
-          <Link to="/recipe">Recipes</Link>
+          {isAuthenticated && (
+            <>
+              <Link to="/inventory">Inventory</Link>
+              <Link to="/shopping">Shopping</Link>
+              <Link to="/recipe">Recipes</Link>
+            </>
+          )}
           {!isAuthenticated ? (
             <>
               <Link to="/login">Login</Link>
