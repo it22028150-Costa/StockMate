@@ -8,6 +8,7 @@ import Shopping from "./components/Shopping";
 import Recipe from "./components/recipe/Recipe";
 import ChatBot from "./components/ChatBot";
 import RecipeDetail from "./components/recipe/RecipeDetail"
+import GenerateRecipes from "./components/recipe/GenerateRecipes";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/shopping" element={<Shopping />} />
           <Route path="/recipe" element={<Recipe />} />
           <Route path="/recipe/:id" element={<RecipeDetail/>}/>
+          <Route path="/recipe/generate" element={<GenerateRecipes/>}/>
           <Route path="/chatbot" element={<ChatBot />} />
         </Routes>
       </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Input, AutoComplete } from "antd";
+import { Button,Input, AutoComplete } from "antd";
 import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 
@@ -113,6 +113,8 @@ const Recipe = () => {
           enterButton
         />
       </AutoComplete>
+
+      <Button type="primary">Generate Recipe from Ingredients</Button>
       
       <div className="mb-4">
         <input 
