@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
@@ -6,7 +6,7 @@ import { FaSearch, FaTrash, FaCheck, FaUndo, FaPrint } from "react-icons/fa";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// Header component (unchanged)
+// Header component
 const Header = ({ currentView, setCurrentView }) => (
   <nav className="sticky top-0 z-10 bg-white shadow-md py-4 mb-8">
     <div className="container mx-auto px-4 flex justify-center space-x-4">
@@ -47,7 +47,7 @@ const Header = ({ currentView, setCurrentView }) => (
   </nav>
 );
 
-// BudgetSummary component (unchanged)
+// BudgetSummary component
 const BudgetSummary = ({ monthlyBudget, totalCost }) => {
   const budgetLeft = monthlyBudget - totalCost;
   return (
@@ -60,11 +60,7 @@ const BudgetSummary = ({ monthlyBudget, totalCost }) => {
         <p className="text-gray-600">
           Monthly Budget: <span className="font-semibold text-indigo-600">${monthlyBudget.toFixed(2)}</span>
         </p>
-        <p
-          className={`font-semibold ${
-            budgetLeft >= 0 ? "text-green-600" : "text-red-600"
-          }`}
-        >
+        <p className={`font-semibold ${budgetLeft >= 0 ? "text-green-600" : "text-red-600"}`}>
           {budgetLeft >= 0
             ? `Budget Left: $${budgetLeft.toFixed(2)}`
             : `Over Budget: $${Math.abs(budgetLeft).toFixed(2)}`}
@@ -74,7 +70,7 @@ const BudgetSummary = ({ monthlyBudget, totalCost }) => {
   );
 };
 
-// BudgetChart component (unchanged)
+// BudgetChart component
 const BudgetChart = ({ monthlyBudget, totalCost }) => {
   const usedBudget = totalCost;
   const remainingBudget = monthlyBudget - totalCost > 0 ? monthlyBudget - totalCost : 0;
@@ -105,7 +101,7 @@ const BudgetChart = ({ monthlyBudget, totalCost }) => {
   );
 };
 
-// InventoryList component (unchanged)
+// InventoryList component
 const InventoryList = ({
   inventoryItems,
   amountInputs,
@@ -205,7 +201,7 @@ const InventoryList = ({
   );
 };
 
-// ShoppingList component (unchanged)
+// ShoppingList component — note id moved to <table>
 const ShoppingList = ({
   shoppingItems,
   calculateItemTotal,
@@ -215,13 +211,13 @@ const ShoppingList = ({
   const pendingItems = shoppingItems.filter((item) => item.status === "pending");
 
   return (
-    <div id="printable-area" className="bg-white p-6 rounded-xl shadow-lg">
+    <div className="bg-white p-6 rounded-xl shadow-lg">
       <h3 className="text-xl font-semibold text-gray-800 mb-4">Shopping List</h3>
       {pendingItems.length === 0 ? (
         <p className="text-gray-500 text-center">No pending items in shopping list!</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full table-auto text-gray-700">
+          <table id="printable-area" className="w-full table-auto text-gray-700">
             <thead>
               <tr className="bg-gray-100 text-left">
                 <th className="px-4 py-3 font-semibold">Item Name</th>
@@ -240,9 +236,7 @@ const ShoppingList = ({
                   <td className="px-4 py-3 text-right">${Number(item.price).toFixed(2)}</td>
                   <td className="px-4 py-3 text-right">${calculateItemTotal(item).toFixed(2)}</td>
                   <td className="px-4 py-3 text-center">
-                    <span
-                      className="inline-block px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-700"
-                    >
+                    <span className="inline-block px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-700">
                       {item.status}
                     </span>
                   </td>
@@ -272,7 +266,7 @@ const ShoppingList = ({
   );
 };
 
-// PurchasedItemsList component (unchanged)
+// PurchasedItemsList component
 const PurchasedItemsList = ({ shoppingItems, calculateItemTotal, handleToggleStatus }) => {
   const purchasedItems = shoppingItems.filter((item) => item.status === "purchased");
 
@@ -302,9 +296,7 @@ const PurchasedItemsList = ({ shoppingItems, calculateItemTotal, handleToggleSta
                   <td className="px-4 py-3 text-right">${Number(item.price).toFixed(2)}</td>
                   <td className="px-4 py-3 text-right">${calculateItemTotal(item).toFixed(2)}</td>
                   <td className="px-4 py-3 text-center">
-                    <span
-                      className="inline-block px-3 py-1 rounded-full text-sm bg-green-100 text-green-700"
-                    >
+                    <span className="inline-block px-3 py-1 rounded-full text-sm bg-green-100 text-green-700">
                       {item.status}
                     </span>
                   </td>
@@ -327,25 +319,24 @@ const PurchasedItemsList = ({ shoppingItems, calculateItemTotal, handleToggleSta
   );
 };
 
-// Main Shopping component (modified)
+// Main Shopping component
 const Shopping = () => {
   const [inventoryItems, setInventoryItems] = useState([]);
   const [shoppingItems, setShoppingItems] = useState([]);
   const [currentView, setCurrentView] = useState("inventory");
   const [priceInputs, setPriceInputs] = useState({});
   const [amountInputs, setAmountInputs] = useState({});
-  // Initialize monthlyBudget from localStorage or default to 100
   const [monthlyBudget, setMonthlyBudget] = useState(() => {
     const savedBudget = localStorage.getItem("monthlyBudget");
-    return savedBudget ? parseFloat(savedBudget) : 100; // Default to 100 if no saved value
+    return savedBudget ? parseFloat(savedBudget) : 100;
   });
 
-  // Save monthlyBudget to localStorage whenever it changes
+  // Persist budget
   useEffect(() => {
     localStorage.setItem("monthlyBudget", monthlyBudget);
   }, [monthlyBudget]);
 
-  // Fetch Inventory Items
+  // Fetchers
   const fetchInventory = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -357,8 +348,6 @@ const Shopping = () => {
       console.error(err);
     }
   };
-
-  // Fetch Shopping Items
   const fetchShopping = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -376,14 +365,13 @@ const Shopping = () => {
     fetchShopping();
   }, []);
 
+  // Handlers
   const handlePriceChange = (e, itemId) => {
     setPriceInputs({ ...priceInputs, [itemId]: e.target.value });
   };
-
   const handleAmountChange = (e, itemId) => {
     setAmountInputs({ ...amountInputs, [itemId]: e.target.value });
   };
-
   const handleAddToShopping = async (item) => {
     const price = parseFloat(priceInputs[item._id]);
     const amount = parseInt(amountInputs[item._id]);
@@ -399,12 +387,7 @@ const Shopping = () => {
       const token = localStorage.getItem("token");
       await axios.post(
         "http://localhost:5000/api/shopping",
-        {
-          itemName: item.itemName,
-          amount: amount,
-          price: price,
-          status: "pending",
-        },
+        { itemName: item.itemName, amount, price, status: "pending" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert(`${item.itemName} added to shopping list!`);
@@ -416,9 +399,8 @@ const Shopping = () => {
       alert(`Failed to add ${item.itemName}`);
     }
   };
-
   const handleToggleStatus = async (item) => {
-    const newStatus = item.status === "pending" ? "purchased、上" : "pending";
+    const newStatus = item.status === "pending" ? "purchased" : "pending";
     try {
       const token = localStorage.getItem("token");
       await axios.put(
@@ -433,7 +415,6 @@ const Shopping = () => {
       alert(`Failed to update status for ${item.itemName}`);
     }
   };
-
   const handleRemove = async (item) => {
     try {
       const token = localStorage.getItem("token");
@@ -454,27 +435,42 @@ const Shopping = () => {
     if (isNaN(price) || isNaN(amount)) return 0;
     return price * amount;
   };
+  const totalCost = shoppingItems.reduce(
+    (sum, item) => sum + calculateItemTotal(item),
+    0
+  );
 
-  const calculateTotal = () => {
-    return shoppingItems.reduce(
-      (total, item) => total + calculateItemTotal(item),
-      0
-    );
-  };
+  // Print-only-table CSS
+  const printStyle = `
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printable-area, #printable-area * {
+        visibility: visible;
+      }
+      #printable-area {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    }
+  `;
 
-  const totalCost = calculateTotal();
-
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Inject print styles */}
+      <style>{printStyle}</style>
+
       <div className="container mx-auto px-4 py-8">
         <h2 className="text-3xl font-bold text-gray-800 text-center mb-8">
           Shopping & Inventory Manager
         </h2>
+
         <Header currentView={currentView} setCurrentView={setCurrentView} />
+
         <div className="transition-opacity duration-300">
           {currentView === "inventory" && (
             <InventoryList
@@ -486,9 +482,10 @@ const Shopping = () => {
               handleAddToShopping={handleAddToShopping}
             />
           )}
+
           {currentView === "shopping" && (
-            <div className="space-y-8">
-              <div className="flex flex-col items-center gap-4">
+            <>
+              <div className="flex flex-col items-center gap-4 mb-6">
                 <div className="w-full max-w-xs">
                   <label className="block text-lg font-semibold text-gray-700 mb-2">
                     Monthly Budget
@@ -499,8 +496,8 @@ const Shopping = () => {
                     min="0"
                     value={monthlyBudget}
                     onChange={(e) => {
-                      const value = parseFloat(e.target.value);
-                      setMonthlyBudget(isNaN(value) ? 0 : value);
+                      const v = parseFloat(e.target.value);
+                      setMonthlyBudget(isNaN(v) ? 0 : v);
                     }}
                     className="w-full border border-gray-200 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all"
                     placeholder="Enter monthly budget"
@@ -521,12 +518,13 @@ const Shopping = () => {
                 handleToggleStatus={handleToggleStatus}
                 handleRemove={handleRemove}
               />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
                 <BudgetSummary monthlyBudget={monthlyBudget} totalCost={totalCost} />
                 <BudgetChart monthlyBudget={monthlyBudget} totalCost={totalCost} />
               </div>
-            </div>
+            </>
           )}
+
           {currentView === "purchased" && (
             <PurchasedItemsList
               shoppingItems={shoppingItems}
