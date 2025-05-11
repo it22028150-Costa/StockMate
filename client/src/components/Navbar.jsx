@@ -27,7 +27,6 @@ const Navbar = () => {
           <Link to="/inventory">Inventory</Link>
           <Link to="/shopping">Shopping</Link>
           <Link to="/recipe">Recipes</Link>
-          <Link to="/chatbot">ChatBot</Link>
           <Link to="/login">Login</Link>
           <Link to="/signup">Sign Up</Link>
           <button 

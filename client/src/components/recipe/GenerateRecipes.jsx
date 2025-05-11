@@ -50,7 +50,7 @@ const GenerateRecipes = () => {
         .filter((item) => selectedItems.includes(item._id))
         .map((item) => item.itemName.toLowerCase());
 
-      // Spoonacular API key (replace with your own API key)
+      // Spoonacular API key
       const apiKey = "dfcfb49e8323452783b82e2411dcf64b";
 
       // Search for recipes using multiple ingredients in a single query
@@ -61,7 +61,7 @@ const GenerateRecipes = () => {
             apiKey,
             includeIngredients: selectedItemNames.join(","),
             number: 10, // Limit to 10 recipes
-            addRecipeInformation: false // We'll fetch detailed info separately
+            addRecipeInformation: false 
           }
         }
       );
@@ -76,7 +76,7 @@ const GenerateRecipes = () => {
           {
             params: {
               apiKey,
-              includeNutrition: false // We don't need nutrition data for now
+              includeNutrition: false 
             }
           }
         );
