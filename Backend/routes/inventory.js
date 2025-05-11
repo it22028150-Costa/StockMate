@@ -14,16 +14,32 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 // Add new inventory item
+// Add new inventory item
 router.post('/', authMiddleware, async (req, res) => {
-  console.log(req.body);
+  console.log('Request body:', req.body); // Log the entire request body
   try {
-    const { itemName, quantity, expiryDate,category} = req.body;
-    const newItem = new Inventory({ user: req.user.id, itemName, quantity, expiryDate, category});
+    const { itemName, quantity, unit, expiryDate, category } = req.body;
+
+    // Validate unit
+    if (!['pcs', 'g', 'kg', 'ml', 'l'].includes(unit)) {
+      return res.status(400).json({ error: 'Invalid unit. Must be one of: pcs, g, kg, ml, l' });
+    }
+
+    const newItem = new Inventory({ 
+      user: req.user.id, 
+      itemName, 
+      quantity, 
+      unit, 
+      expiryDate, 
+      category 
+    });
     
     await newItem.save();
+    console.log('Saved item:', newItem); // Log the saved item
     res.status(201).json(newItem);
     
   } catch(err) {
+    console.error('Error saving item:', err); // Log any errors
     res.status(500).json({ error: err.message });
   }
 });
